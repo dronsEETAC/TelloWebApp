@@ -34,6 +34,7 @@ import mitt from 'mitt';
 const emitter = mitt();
 
 import mqttVueHook from 'mqtt-vue-hook'
+import VueSimpleAlert from "vue-simple-alert";
 
 const app = createApp(App)
 app.use(IonicVue)
@@ -41,13 +42,19 @@ app.use(router)
 
 app.provide('emitter', emitter);
 
-app.use(mqttVueHook, 'mqtt://10.10.10.1:8000', {
+// //app.use(mqttVueHook, 'mqtt://10.10.10.1:8000', {
 //app.use(mqttVueHook, 'ws://broker.hivemq.com:8000/mqtt', {
-//app.use(mqttVueHook, 'mqtt://localhost:8000', {
-  clean: false,
-  keepalive: 60,
-  clientId: 'MobileAppDEE',
-  connectTimeout: 4000,
+app.use(mqttVueHook, 'ws://classpip.upc.edu:8000/mqtt', {
+// //app.use(mqttVueHook, 'mqtt://localhost:8000', {
+// //app.use(mqttVueHook, 'mqtt://192.168.1.46:8000', {
+// app.use(mqttVueHook, 'mqtt://192.168.137.1:8000', {
+   clean: true,
+   keepalive: 60,
+   //clientId: 'MobileAppDEE',
+   clientId: undefined,
+   connectTimeout: 4000,
+   username: 'dronsEETAC',
+   password: 'mimara1456.'
 })
 
 router.isReady().then(() => {

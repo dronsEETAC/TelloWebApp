@@ -2,9 +2,12 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import TabsPage from '../views/TabsPage.vue'
 import ConnectTab from '../views/ConnectTab.vue'
-import AutopilotPage from '../views/AutopilotPage.vue'
-import CameraPage from '../views/CameraPage.vue'
-import LEDsPage from '../views/LEDsPage.vue'
+import OneDronePage from '../views/OneDronePage.vue'
+import SwarmPage from '../views/SwarmPage.vue'
+import PlayMQTTPage from '../views/PlayMQTTPage.vue'
+import PlayWSPage from '../views/PlayWSPage.vue'
+import SetColorPage from '../views/SetColorPage.vue'
+import ShowColorPage from '../views/ShowColorPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -16,20 +19,35 @@ const routes: Array<RouteRecordRaw> = [
     component: TabsPage,
     children: [
       {
-        path: 'autopilot',
-        component: AutopilotPage,
-        name: "AutopilotTab",
+        path: 'OneDrone',
+        component: OneDronePage,
+        name: "OneDrone",
       },
       {
-        path: 'camera',
-        component: CameraPage,
-        name: "CameraTab",
+        path: 'Swarm',
+        component: SwarmPage,
+        name: "Swarm",
       },
       {
-        path: 'leds',
-        component: LEDsPage,
-        name: "LEDsTab"
-      }
+        path: 'PlayMQTT',
+        component: PlayMQTTPage,
+        name: "PlayMQTT",
+      },
+      {
+        path: 'PlayWS',
+        component: PlayWSPage,
+        name: "PlayWS",
+      },
+      {
+        path: 'SetColor',
+        component: SetColorPage,
+        name: "SetColor",
+      },
+      {
+        path: 'ShowColor',
+        component: ShowColorPage,
+        name: "ShowColor",
+      },
     ]
   },
 ]

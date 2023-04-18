@@ -2,11 +2,11 @@
     <ion-page>
       <ion-header>
         <ion-toolbar>
-          <ion-title class="ion-text-center">Drone Engineering Ecosystem</ion-title>
+          <ion-title class="ion-text-center">App para controlar drones</ion-title>
         </ion-toolbar>
       </ion-header>
       <ion-content :fullscreen="true">
-        <ion-button @click = 'connect' class="connectButton" href = "/tabs">Connect to the external broker</ion-button>
+        <ion-button @click = 'connect' class="connectButton" href = "/tabs">Empezamos</ion-button>
       </ion-content>
     </ion-page>
 </template>
@@ -27,7 +27,7 @@
       })
       
       function connect () {
-        mqttHook.publish("mobileApp/autopilotService/connect", "", 1)
+        //mqttHook.publish("mobileApp/autopilotService/connect", "", 1)
       }
       return {
         connect
