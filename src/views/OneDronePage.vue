@@ -74,6 +74,7 @@ import { IonPage,alertController , IonHeader, IonToolbar, IonTitle, IonContent, 
 import { useMQTT } from 'mqtt-vue-hook' 
 import axios from 'axios'
 
+
 export default  defineComponent({
   name: 'OneDronePage',
   components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton },
@@ -82,6 +83,7 @@ export default  defineComponent({
 
     const emitter = inject('emitter');
     const mqttHook = useMQTT()
+    
   
     let altitude = ref(undefined);
     let groundSpeed = ref(undefined);
@@ -90,7 +92,14 @@ export default  defineComponent({
     let direction = ref(undefined);
     let state = ref('waiting');
     let state2 = ref('done');
-    
+    const presentAlert = async () => {
+        const alert = await alertController.create({
+          header: 'Alert',
+          subHeader: 'The tello server is not running',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      };
 
 
     onMounted(() => {
@@ -100,8 +109,7 @@ export default  defineComponent({
       mqttHook.subscribe("serverOneDrone/onHearth", 1)
       mqttHook.subscribe("serverOneDrone/flying", 1)
       mqttHook.subscribe("serverOneDrone/waiting", 1)
-
-
+   
 
       mqttHook.registerEvent('serverOneDrone/done', (topic, message) => {
         state2.value = 'done'
@@ -148,7 +156,13 @@ export default  defineComponent({
       if (state.value == 'waiting') {
         state.value = 'connecting'
         mqttHook.publish("movement/connect");
-        console.log ('connected')
+        setTimeout(() => {
+                            if (state.value == 'connecting') {
+                              state.value = 'waiting';
+                              presentAlert()
+                            }
+                        }, 5000);
+
       } else if (state.value == 'connected')  {
         mqttHook.publish("movement/disconnect");
       }
@@ -179,7 +193,8 @@ export default  defineComponent({
       connect,
       direction,
       state,
-      state2
+      state2,
+      presentAlert
 
     }
   }

@@ -7,7 +7,9 @@
     </ion-header>
     <ion-content :fullscreen="true">
       <div style = "width:80%; margin-left:10%">
-      <ion-button  v-if = "yourTurn == undefined" class="autopilotButton" color="tertiary" @click="play">Play</ion-button>
+      <ion-button  v-if = "yourTurn == undefined && state == undefined" class="autopilotButton" color="tertiary" @click="play">Play</ion-button>
+      <ion-button  v-if = "yourTurn == undefined && state == 'connecting' " class="autopilotButton" color="medium">Connecting ...</ion-button>
+
       <ion-button  v-if = "yourTurn != undefined && turn == yourTurn" class="autopilotButton" color="primary" @click="play">Your turn</ion-button>
       <ion-button  v-if = "yourTurn != undefined && yourTurn != -1 && turn != yourTurn" class="autopilotButton" color="warning" @click="play">Wait</ion-button>
       <ion-button  v-if = "yourTurn == -1" class="autopilotButton" color="danger" @click="play">Sorry</ion-button>
@@ -94,7 +96,14 @@ export default  defineComponent({
     let state = ref (undefined)
     let state2 = ref (undefined)
     let playing = false
-
+    const presentAlert = async () => {
+        const alert = await alertController.create({
+          header: 'Alert',
+          subHeader: 'The tello server is not running',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      };
 
 
 
@@ -114,6 +123,7 @@ export default  defineComponent({
           const data = JSON.parse(message)
           yourTurn.value = data['yourTurn']
           console.log ('mi turno ', data, yourTurn.value)
+
         }
 
       })
@@ -172,9 +182,18 @@ export default  defineComponent({
     }
     function play() {
       console.log ('play')
-      playing = true
+      state.value = 'connecting'
       mqttHook.publish("movement/play");
+      setTimeout(() => {
+                            if (yourTurn.value == undefined) {
+                              presentAlert();
+                              state.value = undefined
+                            } 
+      
+                        }, 5000);
+      playing = true
     }
+
      
     // function connect() {
 

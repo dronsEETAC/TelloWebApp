@@ -9,8 +9,9 @@
       <div style = "width:80%; margin-left:10%">
       <ion-button  v-if = "facil" class="autopilotButton" color="danger" @click="setLevel">Palabras difíciles</ion-button>
       <ion-button  v-if = "!facil" class="autopilotButton" color="primary" @click="setLevel">Palabras fáciles</ion-button>
+      <ion-button  v-if = "yourTurn == undefined && state == undefined" class="autopilotButton" color="tertiary" @click="play">Play</ion-button>
+      <ion-button  v-if = "yourTurn == undefined && state == 'connecting' " class="autopilotButton" color="medium">Connecting ...</ion-button>
 
-      <ion-button  v-if = "yourTurn == undefined" class="autopilotButton" color="tertiary" @click="play">Play</ion-button>
       <ion-button  v-if = "yourTurn != undefined && turn == yourTurn" class="autopilotButton" color="primary" @click="play">Your turn</ion-button>
       <ion-button  v-if = "yourTurn != undefined && yourTurn != -1 && turn != yourTurn" class="autopilotButton" color="warning" @click="play">Wait</ion-button>
       <ion-button  v-if = "yourTurn == -1" class="autopilotButton" color="danger" @click="play">Sorry</ion-button>
@@ -61,10 +62,9 @@
 
 
       </div> -->
-      <img :src="faciles"/>
-      
-      <!-- <img v-if = "facil" :src="faciles"/>
-      <img v-if = "!facil" :src="dificiles"/> -->
+
+      <img v-if = "facil" :src="faciles"/>
+      <img v-if = "!facil" :src="dificiles"/>
       <div class="voice">
         <div id= "startSpeech" class="speech-to-txt"  @click="startSpeechToTxt"></div>       
         <div style = "text-align: center; border-style: solid; font-size: 40px; color:green ; margin-bottom: 10%;margin-top: 0%;">{{texto}}</div>
@@ -112,7 +112,14 @@ export default  defineComponent({
     let facil = ref (true)
 
 
-
+    const presentAlert = async () => {
+        const alert = await alertController.create({
+          header: 'Alert',
+          subHeader: 'The tello server is not running',
+          buttons: ['OK'],
+        });
+        await alert.present();
+      };
 
     onMounted(() => {
       mqttHook.subscribe("serverplay/yourTurn", 1)
@@ -168,6 +175,7 @@ export default  defineComponent({
       mqttHook.registerEvent('serverplay/flying', (topic, message) => {
         if (yourTurn.value != -1) {
           state2.value = 'volando';
+          texto.value ='di algo ...'
         }
       })
       mqttHook.registerEvent('serverplay/late', (topic, message) => {
@@ -261,11 +269,22 @@ export default  defineComponent({
       }
    
     }
+
     function play() {
       console.log ('play')
-      playing = true
+      state.value = 'connecting'
       mqttHook.publish("movement/play");
+      setTimeout(() => {
+                            if (yourTurn.value == undefined) {
+                              presentAlert();
+                              state.value = undefined
+                            } 
+      
+                        }, 5000);
+      playing = true
     }
+
+     
      
     // function connect() {
 
@@ -280,6 +299,7 @@ export default  defineComponent({
       if (playing) {
         state2.value = 'despegando'
         mqttHook.publish("movement/takeOff/"+ yourTurn.value);
+        texto.value ='despegando ...'
 
       }
     }
@@ -289,7 +309,6 @@ export default  defineComponent({
     }
     function setLevel(){
       facil.value = !facil.value
-      texto.value = 'he cambiado'
     }
 
 
