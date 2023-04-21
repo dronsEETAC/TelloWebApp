@@ -11,8 +11,7 @@
         <div v-if = "color == '#eb6bcb'" style ="background-color: #eb6bcb; height: 100%;"></div>
         <div v-if = "color == 'green'" style ="background-color: green; height: 100%;"></div>
         <div v-if = "color == 'purple'" style ="background-color: purple; height: 100%;"></div>
-        <div v-if = "color == '#23426c'" style ="background-color: #23426c; height: 100%;"></div>
-
+        <div v-if = "color == '#23426c'" style ="background-color: #23426c; height: 100%;"></div> 
 
     </ion-content>
   </ion-page>
@@ -32,6 +31,7 @@ export default  defineComponent({
   setup() {
     let connected = ref(true);
     let color = ref ("yellow")
+
     const mqttHook = useMQTT()
     
     onMounted(() => {
@@ -43,23 +43,22 @@ export default  defineComponent({
           color.value = data['color']
       })
     })
-      
-    
-    
-    // let connection = new WebSocket(`ws://192.168.137.1:8002`);
-    // connection.onmessage = function (event) {
-    //    console.log (event.data)
-    //    color.value = event.data
-    // }
-
+   
  
     return {
         connected,
-        color,
+        color
         //connection
     };
-  },
-});
+
+   }
+  
+      
+  })
+    
+
+
+ 
 </script>
 
 <style>

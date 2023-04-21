@@ -90,45 +90,25 @@ export default  defineComponent({
     let direction = ref(undefined);
     let state = ref('waiting');
     let state2 = ref('done');
-    
+    //let connection = new WebSocket(`ws://localhost:8002`);
+    let connection = new WebSocket(`ws://192.168.137.1:8002`);
 
-
-    onMounted(() => {
-      mqttHook.subscribe("serverOneDrone/connected", 1)
-      mqttHook.subscribe("serverOneDrone/done", 1)
-      mqttHook.subscribe("serverOneDrone/battery", 1)
-      mqttHook.subscribe("serverOneDrone/onHearth", 1)
-      mqttHook.subscribe("serverOneDrone/flying", 1)
-      mqttHook.subscribe("serverOneDrone/waiting", 1)
-
-
-
-      mqttHook.registerEvent('serverOneDrone/done', (topic, message) => {
+    connection.onmessage = function (event) {
+       console.log ('recibo ',event.data)
+       if (event.data.includes ('battery')) {
+        let trozos = event.data.split('/')
+        battery.value = trozos[1]
+      } else if (event.data == 'done') {
         state2.value = 'done'
-      })
-      mqttHook.registerEvent('serverOneDrone/battery', (topic, message) => {
-        const data = JSON.parse(message)
-        battery.value = data['battery']
-      })
-      mqttHook.registerEvent('serverOneDrone/onHearth', (topic, message) => {
+       } else if (event.data == 'onHearth') {
         state.value = 'connected'
         state2.value = undefined
-      })
-      mqttHook.registerEvent('serverOneDrone/flying', (topic, message) => {
-          state.value = 'flying'
-          state2.value = 'done'
-      })
-      mqttHook.registerEvent('serverOneDrone/connected', (topic, message) => {
-        state.value = 'connected'
-        state2.value = undefined
-      })
-      mqttHook.registerEvent('serverOneDrone/waiting', (topic, message) => {
-          state.value = 'waiting'
-      })
-    
-    })
-
-
+       } else {
+        state.value = event.data
+       }
+       console.log ('pppp ', state.value)
+      
+    }
 
 
     function go (event) {
@@ -138,8 +118,7 @@ export default  defineComponent({
         let dir = event.currentTarget.id;
         state2.value = dir
         console.log ('envio ', dir)
-        mqttHook.publish("movement/"+dir);
-
+        connection.send (dir)
       }
     }
     
@@ -147,10 +126,10 @@ export default  defineComponent({
     function connect() {
       if (state.value == 'waiting') {
         state.value = 'connecting'
-        mqttHook.publish("movement/connect");
+        connection.send ('connect')
         console.log ('connected')
       } else if (state.value == 'connected')  {
-        mqttHook.publish("movement/disconnect");
+        connection.send ('disconnect')
       }
     }
 
@@ -158,13 +137,12 @@ export default  defineComponent({
     function takeOff() {
       
       state.value = 'takingOff'
-      mqttHook.publish("movement/takeOff");
-
+      connection.send ('takeOff')
 
     }
     function land(){
       state2.value = 'landing'
-      mqttHook.publish("movement/land");
+      connection.send ('land')
     }
 
     return {
@@ -178,6 +156,7 @@ export default  defineComponent({
       battery,
       connect,
       direction,
+      connection,
       state,
       state2
 

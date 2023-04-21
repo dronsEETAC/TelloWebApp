@@ -5,6 +5,7 @@ import ConnectTab from '../views/ConnectTab.vue'
 import OneDronePage from '../views/OneDronePage.vue'
 import SwarmPage from '../views/SwarmPage.vue'
 import PlayMQTTPage from '../views/PlayMQTTPage.vue'
+import PlaySpeechMQTTPage from '../views/PlaySpeechMQTTPage.vue'
 import PlayWSPage from '../views/PlayWSPage.vue'
 import SetColorPage from '../views/SetColorPage.vue'
 import ShowColorPage from '../views/ShowColorPage.vue'
@@ -13,6 +14,8 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     component: ConnectTab
+    //component: TabsPage
+
   },
   {
     path: '/tabs/',
@@ -32,6 +35,11 @@ const routes: Array<RouteRecordRaw> = [
         path: 'PlayMQTT',
         component: PlayMQTTPage,
         name: "PlayMQTT",
+      },
+      {
+        path: 'PlaySpeechMQTT',
+        component: PlaySpeechMQTTPage,
+        name: "PlaySpeechMQTT",
       },
       {
         path: 'PlayWS',
