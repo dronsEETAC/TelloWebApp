@@ -241,7 +241,7 @@ export default  defineComponent({
                 mqttHook.publish("movement/Izquierda/"+ yourTurn.value);
               } else   if (texto.value == 'peluca') {
                 mqttHook.publish("movement/Derecha/"+ yourTurn.value);
-              } else   if (texto.value == 'naríz') {
+              } else   if (texto.value == 'nariz') {
                 mqttHook.publish("movement/Arriba/"+ yourTurn.value);
               } else   if (texto.value == 'salsa') {
                 mqttHook.publish("movement/Abajo/"+ yourTurn.value);
