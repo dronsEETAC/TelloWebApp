@@ -56,10 +56,19 @@
 
 
       </div>
-
+      
       <ion-button  v-if = "state != 'flying'"  class="autopilotButton" color="medium" >Aterriza</ion-button>
       <ion-button  v-if = "state == 'flying' && state2 != 'landing'"  class="autopilotButton"   @click="land" color="tertiary" >Aterriza</ion-button>
       <ion-button  v-if = "state == 'flying' && state2 == 'landing'"  class="autopilotButton"  color="warning" >Aterrizando ...</ion-button>
+ 
+      <div  v-if = "state == 'connected' || state == 'flying'" style = "margin-top: 10%;">
+        <ion-button  v-if = "!showingFaces"  class="autopilotButton" color="primary" @click="showFaces" >Muestra caras</ion-button>      
+        <ion-button  v-if = "showingFaces"  class="autopilotButton" color="danger" @click="removeFaces" >Quita caras</ion-button>          
+        <ion-button  class="autopilotButton"   @click="takePic" color="tertiary" >Foto</ion-button>      
+        <ion-button  v-if = "!recording"  class="autopilotButton" color="secondary" @click="startREC" >Inicia REC</ion-button>
+        <ion-button   v-if = "recording" class="autopilotButton"  @click="stopREC" color="danger" >Para REC</ion-button>
+      </div>
+
       <div style = "text-align: center; font-size: 40px; color:red ; margin-top: 10%;">{{battery}}</div>
       </div>
     </ion-content>
@@ -92,6 +101,9 @@ export default  defineComponent({
     let direction = ref(undefined);
     let state = ref('waiting');
     let state2 = ref('done');
+    let recording = ref (false);
+    let showingFaces = ref (false);
+
     const presentAlert = async () => {
         const alert = await alertController.create({
           header: 'Alert',
@@ -161,7 +173,7 @@ export default  defineComponent({
                               state.value = 'waiting';
                               presentAlert()
                             }
-                        }, 5000);
+                        }, 8000);
 
       } else if (state.value == 'connected')  {
         mqttHook.publish("movement/disconnect");
@@ -180,12 +192,38 @@ export default  defineComponent({
       state2.value = 'landing'
       mqttHook.publish("movement/land");
     }
+    function takePic(){
+      mqttHook.publish("movement/takePic");
+    }
+    function startREC(){
+      recording.value = true;
+      mqttHook.publish("movement/startREC");
+    }
+    function stopREC(){
+      recording.value = false;
+      mqttHook.publish("movement/stopREC");
+    }
+    function showFaces(){
+      showingFaces.value = true;
+      mqttHook.publish("movement/showFaces");
+    }
+    function removeFaces(){
+      showingFaces.value = false;
+      mqttHook.publish("movement/removeFaces");
+    }
+
+
 
     return {
       takeOff,
       altitude,
       groundSpeed,
       land,
+      takePic,
+      startREC,
+      stopREC,
+      showFaces,
+      removeFaces,
       emitter,
       go,
       heading,
@@ -194,6 +232,8 @@ export default  defineComponent({
       direction,
       state,
       state2,
+      recording,
+      showingFaces,
       presentAlert
 
     }
